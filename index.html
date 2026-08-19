@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>CDC FPS Test</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #screen {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+    }
+
+    #info {
+      position: absolute;
+      left: 60px;
+      top: 50px;
+      font-size: 64px;
+      line-height: 1.35;
+      color: #00ffcc;
+      font-weight: bold;
+      text-shadow: 0 0 8px #000;
+    }
+
+    #bigFrame {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 38%;
+      text-align: center;
+      font-size: 150px;
+      color: #ffff00;
+      font-weight: bold;
+      text-shadow: 0 0 12px #000;
+    }
+
+    #bar {
+      position: absolute;
+      top: 72%;
+      width: 80px;
+      height: 180px;
+      background: #ff3030;
+    }
+
+    #colorBox {
+      position: absolute;
+      right: 80px;
+      top: 70px;
+      width: 260px;
+      height: 260px;
+      background: #fff;
+      border: 6px solid #fff;
+    }
+
+    #rotateBox {
+      position: absolute;
+      right: 110px;
+      bottom: 90px;
+      width: 180px;
+      height: 180px;
+      background: #3399ff;
+      transform-origin: center center;
+    }
+
+    #grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="screen">
+    <div id="grid"></div>
+    <div id="info"></div>
+    <div id="bigFrame"></div>
+    <div id="bar"></div>
+    <div id="colorBox"></div>
+    <div id="rotateBox"></div>
+  </div>
+
+  <script>
+    const info = document.getElementById("info");
+    const bigFrame = document.getElementById("bigFrame");
+    const bar = document.getElementById("bar");
+    const colorBox = document.getElementById("colorBox");
+    const rotateBox = document.getElementById("rotateBox");
+
+    let frame = 0;
+    let startTime = performance.now();
+    let lastFpsTime = performance.now();
+    let fpsFrameCount = 0;
+    let measuredFps = 0;
+
+    const colors = [
+      "#ffffff",
+      "#ff3030",
+      "#30ff30",
+      "#3030ff",
+      "#ffff00",
+      "#ff00ff",
+      "#00ffff",
+      "#ff9900"
+    ];
+
+    function animate(now) {
+      frame++;
+      fpsFrameCount++;
+
+      const elapsed = (now - startTime) / 1000;
+
+      if (now - lastFpsTime >= 1000) {
+        measuredFps = fpsFrameCount * 1000 / (now - lastFpsTime);
+        fpsFrameCount = 0;
+        lastFpsTime = now;
+      }
+
+      const frameText = String(frame).padStart(6, "0");
+
+      info.innerHTML =
+        "FPS : " + measuredFps.toFixed(1) + "<br>" +
+        "FRAME : " + frameText + "<br>" +
+        "TIME : " + elapsed.toFixed(3) + " s";
+
+      bigFrame.textContent = "FRAME " + frameText;
+
+      const screenWidth = window.innerWidth;
+      const barWidth = 80;
+      const x = ((Math.sin(elapsed * 2 * Math.PI * 0.25) + 1) / 2) * (screenWidth - barWidth);
+      bar.style.left = x + "px";
+
+      colorBox.style.background = colors[frame % colors.length];
+
+      rotateBox.style.transform = "rotate(" + (frame * 6) + "deg)";
+
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
