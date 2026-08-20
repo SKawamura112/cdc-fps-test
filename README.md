@@ -1,1 +1,1 @@
-# cdc-fps-test
+# cdc-fps-test-60fps
